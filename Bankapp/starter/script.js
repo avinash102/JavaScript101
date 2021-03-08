@@ -71,20 +71,132 @@ const inputClosePin = document.querySelector('.form__input--pin');
 //first thing we need to clear the given data and use it for our purpose so use containerMovements.innerhtml =''; it will clear the previous data
 //difference b/w afterbegin(it will apeend one data after another like [2.3.4]  print 4 3 2 :)  ) nd beforebegin(it will apeend one data after another like [2.3.4]  print 2 3 4  )
 
-// const movements = function (movements) {
-//   containerMovements.innerHTML = '';
-//   movements.forEach(function (mov, i) {
-//     const type = mov > 0 ? 'deposit' : 'withdrawal';
-//     const html = `
-//         <div class="movements__row">
-//           <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-//           <div class="movements__value">${mov}</div>
-//         </div>
-//     `
-//     containerMovements.insertAdjacentHTML('afterbegin', html);
-//   });
-// }
-// movements(account1.movements)
+//Movements based on deposite and withdrawl 
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = '';
+  movements.forEach(function (mov, i) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+    const html = `
+        <div class="movements__row">
+          <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+          <div class="movements__value">${mov}€</div>
+        </div>
+    `
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+}
+
+
+//Display Balance 
+const displayBalance = function (movements) {
+  const balance = movements.reduce((acc, cur) => {
+    return acc + cur;
+  })
+
+  labelBalance.textContent = `${balance}€`;
+};
+
+//Display Summary income ,out and intrest
+const displaySummary = function (accs) {
+  const income = accs.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, cur) => acc + cur);
+  labelSumIn.textContent = `${income}€`;
+
+  const out = accs.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, cur) => acc + cur);
+  labelSumOut.textContent = `${Math.abs(out)}€`
+
+  const interest = accs.movements
+    .filter(mov => mov > 0)
+    .map((deposit) => (accs.interestRate / 100) * deposit)
+    .filter((mov, i, arr) => mov > 1) // excluding below 1%
+    .reduce((acc, cur) => acc + cur);
+  labelSumInterest.textContent = `${interest}€`
+}
+
+
+//Computing username 
+const createUserName = function (accs) {
+  accs.forEach(function (acc) { //here we use for each because we dont want to create a new array.
+    acc.username = acc.owner// be careful
+      .toLowerCase()
+      .split(" ")
+      .map(name => name[0])
+      .join('');
+  });
+}
+createUserName(accounts);
+
+// Event Handler 
+let currentAccount;
+
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  //Find the cuurent Account 
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
+
+  //Verify the pin
+  if (Number(inputLoginPin.value) === currentAccount.pin) {
+    //Display UI  and welcome message
+    labelWelcome.textContent = 'Welcome back,' + currentAccount.owner.split(" ")[0];
+    containerApp.style.opacity = 100;
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+
+    // Display movements
+    displayMovements(currentAccount.movements);
+
+    // Display Balance
+    displayBalance(currentAccount.movements);
+
+    //display Summary
+    displaySummary(currentAccount);
+
+
+
+  } else {
+    console.log('Wrong username and password')
+  }
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -139,17 +251,17 @@ GOOD LUCK 😀
 
 
 //Computing username 
-const createUserName = function (accs) {
-  accs.forEach(function (acc) { //here we use for ech because we dont want to create a new array.
-    acc.username = acc.owner// be careful
-      .toLowerCase()
-      .split(" ")
-      .map(name => name[0])
-      .join('');
-  });
-}
-createUserName(accounts);
-console.log(accounts);
+// const createUserName = function (accs) {
+//   accs.forEach(function (acc) { //here we use for ech because we dont want to create a new array.
+//     acc.username = acc.owner// be careful
+//       .toLowerCase()
+//       .split(" ")
+//       .map(name => name[0])
+//       .join('');
+//   });
+// }
+// createUserName(accounts);
+// console.log(accounts);
 
 
 //Filter function
@@ -157,15 +269,15 @@ console.log(accounts);
 //Regular forof loop we cant chain multiple method but in map filter we can able to add multiple chain method
 //challenge for withdrawl
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-const deposit = movements.filter(function (mov) {
-  return mov > 0;
-});
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const deposit = movements.filter(function (mov) {
+//   return mov > 0;
+// });
 
-console.log(deposit)
+// console.log(deposit)
 
-const withdrawl = movements.filter(mov => mov < 0);
-console.log(withdrawl)
+// const withdrawl = movements.filter(mov => mov < 0);
+// console.log(withdrawl)
 
 
 //Reduce Method
@@ -178,4 +290,137 @@ console.log(withdrawl)
 //after that create a function calcDisplayBalance tkes movements and add balance  and show it to browser
 
 
+//without arrow function
+// console.log(movements);
+// const balance = movements.reduce(function (acc, cur, i) {
+//   console.log(`Iteration ${i + 1} : ${acc} `)
+//   return acc + cur;
+// }, 100);
+// console.log(balance);
+// with arrow function
+// console.log(movements);
+// const balance = movements.reduce((acc, cur, i) => acc + cur, 0);
+// console.log(balance);
+
+
+
 //Maximum value (3000) const max
+// console.log(movements);
+// const max = movements.reduce((acc, mov) => {
+//   if (acc < mov) {
+//     return acc = mov;
+//   } else {
+//     return acc;
+//   }
+// }, movements[0]);
+// console.log(max);
+
+
+//coding challenge 2
+
+// Let's go back to Julia and Kate's study about dogs. This time, they want to convert dog ages to human ages and calculate the average age of the dogs in their study.
+// Create a function 'calcAverageHumanAge', which accepts an arrays of dog's ages ('ages'), and does the following things in order:
+// 1. Calculate the dog age in human years using the following formula: if the dog is <= 2 years old, humanAge = 2 * dogAge. If the dog is > 2 years old, humanAge = 16 + dogAge * 4.
+// 2. Exclude all dogs that are less than 18 human years old (which is the same as keeping dogs that are at least 18 years old)
+// 3. Calculate the average human age of all adult dogs (you should already know from other challenges how we calculate averages 😉)
+// 4. Run the function for both test datasets
+// TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
+// TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
+// GOOD LUCK 😀
+
+// const calcAverageHumanAge = function (dogAge) {
+//   const humanAge = dogAge.map(dogAge => dogAge <= 2 ? (2 * dogAge) : (16 + (dogAge * 4)));
+//   const adultAgedogs = humanAge.filter(age => age >= 18);
+//   const avgHumanAge = adultAgedogs.reduce((acc, cur) => acc + cur) / adultAgedogs.length;
+//   console.log(humanAge);
+//   console.log(adultAgedogs);
+//   console.log(avgHumanAge);
+// };
+// calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
+
+//The magic of chaining method 
+
+//We can do multiple task at one instance 
+//In map and filter since these return a new array we can call anything we want but in reduce method we cant do pipeline that process our data
+//Debugging is tough but if we want to check we can check the arr in next method ex after filter if we applied map then check the array in map
+
+
+//again come back to application 
+//create the function calcDisplaySummary
+//const incomes Euro symbol;
+//const out there is no issues with negative sign 
+//Intrest for each deposite we recieve 1.2% intrest
+//in intrest we need to exclude the intrest which which is less that 1 %
+
+
+//Chaining method has some time huge issues if we have huge arrays and chaining becomes slow we shouldn't call reverse and splice method for big appliction since these methods mutates the original array.  
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/*
+Rewrite the 'calcAverageHumanAge' function from the previous challenge, but this time as an arrow function, and using chaining!
+TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
+TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
+GOOD LUCK 😀
+*/
+
+
+// const calcAverageHumanAge = function (dogAge) {
+//   const humanAge = dogAge
+//     .map(dogAge => dogAge <= 2 ? (2 * dogAge) : (16 + (dogAge * 4)))
+//     .filter(age => age >= 18)
+//     .reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+//   console.log(humanAge);
+// };
+// calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
+
+
+// Find Method 
+// This method retrive one element from the array based on the condition which is satisfied by the array
+//In this method it looks similar to filter but it wont create a new array instead of that it find the first element for which the condition is satisfied.
+//Ex = const firstWithdrawl = movements.find(mov=>mov<0);
+//console.log(accounts);
+//const account = accounts.find(acc => acc.owner==='Jessica Davis');
+
+//Implementing Login Lecture
+
+
+//Event handler
+
+// let currentAccount
+
+//bcoz later we have have to use in which account we have transfer the money
+//
+
+// btnLogin.addEventListener('click',function(){
+//   console.log("Login")// It flash in the console once we press enter or login button but we try to avoid do below  task
+// })
+
+// btnLogin.addEventListener('click', function (e) {
+//   e.preventDefault();
+
+//   currentAccount = accounts.find(
+//     acc => acc.username === inputLoginPinUsername.value
+//   );
+//   console.log(currentAccount);
+
+//   if (currentAccount?.pin === Number(inputLoginPin.value)) {
+//     //Display Ui message
+//     // labelWelcome with current Name
+//     // continerApp.style.opacity = 100;
+//     //inputloginusername.value = inputloginpin.value ='';
+//     //but cursor is still blinkinking so to avoid that use blur in inputloginpin
+
+//     //Display Movements
+//     //displayMovent method based on current user
+
+//     //Display Balance
+//     //displayBalance based on current user
+
+//     //Display summary 
+//     //displaySummary based on current user
+//     //here intrest rate is different for all the cccounts so we need to passthe acc parameter to the function based on that we have to create the dynamic intrest.
+//   }
+
+// })
