@@ -72,6 +72,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
 //difference b/w afterbegin(it will apeend one data after another like [2.3.4]  print 4 3 2 :)  ) nd beforebegin(it will apeend one data after another like [2.3.4]  print 2 3 4  )
 
 //Movements based on deposite and withdrawl 
+
+
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
   movements.forEach(function (mov, i) {
@@ -88,12 +90,11 @@ const displayMovements = function (movements) {
 
 
 //Display Balance 
-const displayBalance = function (movements) {
-  const balance = movements.reduce((acc, cur) => {
+const displayBalance = function (accs) {
+  accs.balance = accs.movements.reduce((acc, cur) => {
     return acc + cur;
   })
-
-  labelBalance.textContent = `${balance}€`;
+  labelBalance.textContent = `${accs.balance}€`;
 };
 
 //Display Summary income ,out and intrest
@@ -129,9 +130,17 @@ const createUserName = function (accs) {
 }
 createUserName(accounts);
 
-// Event Handler 
-let currentAccount;
+const updateUI = function (acc) {
+  // Display movements
+  displayMovements(acc.movements);
+  // Display Balance
+  displayBalance(acc);
+  //display Summary
+  displaySummary(acc);
+}
 
+// Event Handler on Login
+let currentAccount;
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
   //Find the cuurent Account 
@@ -144,18 +153,8 @@ btnLogin.addEventListener('click', function (e) {
     containerApp.style.opacity = 100;
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
-
-
-    // Display movements
-    displayMovements(currentAccount.movements);
-
-    // Display Balance
-    displayBalance(currentAccount.movements);
-
-    //display Summary
-    displaySummary(currentAccount);
-
-
+    //Update Ui
+    updateUI(currentAccount);
 
   } else {
     console.log('Wrong username and password')
@@ -164,17 +163,36 @@ btnLogin.addEventListener('click', function (e) {
 })
 
 
+//Transfer Money Lecture
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const recieverAccount = accounts.find(acc => acc.username === inputTransferTo.value);
+  if (amount > 0 && recieverAccount && currentAccount?.balance >= amount && recieverAccount?.username !== currentAccount.username) {
+    //Doing the transfer
+    console.log(currentAccount, recieverAccount);
+    currentAccount.movements.push(-amount);
+    recieverAccount.movements.push(amount);
+    //Update Ui
+    updateUI(currentAccount);
+  }
+})
 
 
-
-
-
-
-
-
-
-
-
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  // console.log(inputCloseUsername.value);
+  // console.log(typeof inputClosePin.value);
+  // console.log(currentAccount);
+  if (inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin) {
+    const index = accounts.findIndex(acc => acc.username === inputCloseUsername.value);
+    console.log(index);
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+  //after that clear the input
+  inputCloseUsername.value = inputClosePin.value = '';
+})
 
 
 
@@ -386,7 +404,7 @@ GOOD LUCK 😀
 //Implementing Login Lecture
 
 
-//Event handler
+//Event handler forLOGIN Lecture
 
 // let currentAccount
 
@@ -424,3 +442,101 @@ GOOD LUCK 😀
 //   }
 
 // })
+
+
+//Transfer Money Lecture
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  //Take amount from Ui const amount;
+  //Take receiverAccount Name from ui const receiverAccount
+  //check whether display correct or not
+  //So we need to add certain condition suppose in account only 3000 is there and he wants to transfer 5000
+
+  // Clear the input once every thing is finished
+
+  //check balance it is not stored to object so we pass the acc to balance and add the property balance to the object
+  //and checking amount>0 and recieverAccount and current Account.blance>=amount adnd also recieverAccountAcc?.username !=== currentAccount.username.
+  //Doint the transfer
+  // currentAccount.movemets.push(-amount);
+  // receiverAcc.movements.push(amount);
+  //Create a modular function to  updateUi();
+
+})
+
+//Close ACCOUNT nd findINDEx Method Lecture 
+
+//FindIndex method 
+//it will return the index of find element not the element
+
+//so in out application if someone want to delete his account then we know we want splice method which need index
+
+
+// btnClose.addEventListener(function (e) {
+//   e.preventDefault();
+//   console.log("delete");
+//   //Match the credential first and pin 
+//   //findindex for the current account  const index
+//   //accounts splice 
+//   //hide the ui 
+//   //after that clear the input 
+// })
+
+
+//Some and every lecture
+
+//include method check for equality but if we want to check condition
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// console.log(movements);
+// console.log(movements.includes(-130));
+
+//if we want to check whether is there any positive movements or up to some greater amount 
+
+//We can also check for equality 
+// console.log(movements.some(mov => mov === -130));
+// const anyDeposits = movements.some(mov => mov > 5000);
+// console.log(anyDeposits);
+
+// Need to do
+// Now go to BankApp apllication
+// Request loan 
+// Click button
+// check amount greater than zero and movement greater the 0.1percent 
+//push that value in movements 
+//update ui
+//clesr input field 
+
+
+// Every Method
+//it check all the elemts present in the array sties fies the condition 
+
+console.log(movements.every(mov => mov > 0));
+
+//Here we cn call every object with ease 
+const deposit = mov => mov > 0;
+console.log(movements.some(deposit));
+
+//Flat and FlatMap
+//Flat flattened athe given nested array
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr.flat());
+
+const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+console.log(arrDeep.flat());
+//Flat Mthod only go 1 level deep
+console.log(arrDeep.flat(2));
+// now it goes 2 level deep
+
+//Now we want overall sum for the given movements of ccount array
+//flat
+const overAllSum = accounts.map(acc => acc.movements).flat().reduce((acc, mov) => acc + mov, 0);
+console.log(overAllSum);
+
+
+//now using map metod and flatting the results are very common
+//flatmap
+const overAllSum2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overAllSum2);
+
+//one cons of flatMap is it only goes one level deep
