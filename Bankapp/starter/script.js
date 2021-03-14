@@ -485,7 +485,7 @@ btnTransfer.addEventListener('click', function (e) {
 //Some and every lecture
 
 //include method check for equality but if we want to check condition
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // console.log(movements);
 // console.log(movements.includes(-130));
 
@@ -509,34 +509,69 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // Every Method
 //it check all the elemts present in the array sties fies the condition 
 
-console.log(movements.every(mov => mov > 0));
+// console.log(movements.every(mov => mov > 0));
 
 //Here we cn call every object with ease 
-const deposit = mov => mov > 0;
-console.log(movements.some(deposit));
+// const deposit = mov => mov > 0;
+// console.log(movements.some(deposit));
 
 //Flat and FlatMap
 //Flat flattened athe given nested array
-const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
-console.log(arr.flat());
+// const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+// console.log(arr.flat());
 
-const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
-console.log(arrDeep.flat());
+// const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+// console.log(arrDeep.flat());
 //Flat Mthod only go 1 level deep
-console.log(arrDeep.flat(2));
+// console.log(arrDeep.flat(2));
 // now it goes 2 level deep
 
 //Now we want overall sum for the given movements of ccount array
 //flat
-const overAllSum = accounts.map(acc => acc.movements).flat().reduce((acc, mov) => acc + mov, 0);
-console.log(overAllSum);
+// const overAllSum = accounts.map(acc => acc.movements).flat().reduce((acc, mov) => acc + mov, 0);
+// console.log(overAllSum);
 
 
 //now using map metod and flatting the results are very common
 //flatmap
-const overAllSum2 = accounts
-  .flatMap(acc => acc.movements)
-  .reduce((acc, mov) => acc + mov, 0);
-console.log(overAllSum2);
+// const overAllSum2 = accounts
+//   .flatMap(acc => acc.movements)
+//   .reduce((acc, mov) => acc + mov, 0);
+// console.log(overAllSum2);
 
 //one cons of flatMap is it only goes one level deep
+
+
+//Sorting Lecture
+//Sort method done the sorting based on the string 
+
+const owner = ['Vivek', 'Avinash', 'Mahesh', 'Somu'];
+console.log(owner.sort());
+// (4) ["Avinash", "Mahesh", "Somu", "Vivek"]
+
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+console.log(movements); //Sorting based on first character trested as string 
+//(8) [-130, -400, -650, 1300, 200, 3000, 450, 70]
+
+//To overcome this 
+// movements.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (a < b) return -1
+// })
+// console.log(movements);
+
+movements.sort((a, b) => a - b);//ascending order
+console.log(movements);
+
+movements.sort((a, b) => b - a);//decending order
+console.log(movements);
+
+//Sorting in Bankapp application
+//go to display movements and set sort = false
+// const movs = sort ? movememts.sort will align it diffrent wys as we discussed use movements.splice().sort((a,b) => a-b): movements; then iterate movs which we have created
+//btn sort click
+//displaymovements(currentaccount.movents,true !sorted);
+//it will sort the rray but once we click again nothing shows up
+// to solve this mintain the state let sorted = false;
+// sorted = !sorted;
